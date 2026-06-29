@@ -1,5 +1,7 @@
 import { Link, Outlet } from 'react-router-dom'
+import { GoogleOneTapPrompt } from '../auth/GoogleOneTapPrompt'
 import { useAuth } from '../../context/AuthContext'
+import { isGoogleAuthEnabled } from '../../lib/auth/social-providers'
 import { SocketPulseDot } from '../socket/SocketPulseDot'
 import { Card } from '../ui/Card'
 import { ThemeToggle } from '../ui/ThemeToggle'
@@ -9,6 +11,7 @@ export function AuthLayout() {
 
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
+      {isGoogleAuthEnabled() && !isAuthenticated ? <GoogleOneTapPrompt /> : null}
       <div className="relative hidden overflow-hidden bg-surface-900 lg:block">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.35),_transparent_55%)]" />
         <div className="relative flex h-full flex-col justify-between p-12 text-white">

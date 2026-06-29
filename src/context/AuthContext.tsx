@@ -8,8 +8,10 @@ import {
   type ReactNode,
 } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { googleLogout } from '@react-oauth/google'
 import { useToast } from './ToastContext'
 import { AUTH_EVENTS } from '../lib/auth/events'
+import { isGoogleAuthEnabled } from '../lib/auth/social-providers'
 import {
   authApi,
   tokenStore,
@@ -263,6 +265,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await authApi.logout()
     } finally {
+      if (isGoogleAuthEnabled()) {
+        googleLogout()
+      }
       setUser(null)
       authSession.clearAuthFlow()
       toast.info('Signed out.')

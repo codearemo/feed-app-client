@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { GoogleLogin, type CredentialResponse } from '@react-oauth/google'
+import { GoogleLogin } from '@react-oauth/google'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
+import { useGoogleCredentialLogin } from '../../hooks/useGoogleCredentialLogin'
 import { signInWithApple } from '../../lib/auth/apple-sign-in'
 import {
   isAppleAuthEnabled,
@@ -14,6 +15,7 @@ import { Button } from '../ui/Button'
 
 type SocialAuthButtonsProps = {
   disabled?: boolean
+  mode?: 'signin' | 'signup'
 }
 
 function SocialAuthDivider() {
@@ -33,13 +35,14 @@ function SocialAuthDivider() {
 
 function GoogleSignInButton({
   disabled,
+  mode = 'signin',
   onBusyChange,
 }: {
   disabled?: boolean
+  mode?: 'signin' | 'signup'
   onBusyChange: (busy: boolean) => void
 }) {
-  const { socialLogin } = useAuth()
-  const toast = useToast()
+  const handleSuccess = useGoogleCredentialLogin(onBusyChange)
   const containerRef = useRef<HTMLDivElement>(null)
   const [buttonWidth, setButtonWidth] = useState(320)
 
@@ -64,25 +67,8 @@ function GoogleSignInButton({
     return () => observer.disconnect()
   }, [])
 
-  async function handleSuccess(response: CredentialResponse) {
-    if (!response.credential) {
-      toast.error('Google did not return a sign-in token')
-      return
-    }
-
-    onBusyChange(true)
-
-    try {
-      await socialLogin('google', response.credential)
-    } catch (error) {
-      toast.error(getErrorMessage(error, 'Google sign in failed'))
-    } finally {
-      onBusyChange(false)
-    }
-  }
-
   function handleError() {
-    toast.error('Google sign in was cancelled or failed')
+    // Cancelled or failed — no toast; One Tap or retry is available.
   }
 
   return (
@@ -91,12 +77,12 @@ function GoogleSignInButton({
       className={`flex w-full justify-center ${disabled ? 'pointer-events-none opacity-50' : ''}`}
     >
       <GoogleLogin
-        onSuccess={handleSuccess}
+        onSuccess={(response) => void handleSuccess(response)}
         onError={handleError}
         theme="outline"
         size="large"
         shape="rectangular"
-        text="continue_with"
+        text={mode === 'signup' ? 'signup_with' : 'signin_with'}
         width={buttonWidth}
       />
     </div>
@@ -145,7 +131,7 @@ function AppleSignInButton({
   )
 }
 
-export function SocialAuthButtons({ disabled = false }: SocialAuthButtonsProps) {
+export function SocialAuthButtons({ disabled = false, mode = 'signin' }: SocialAuthButtonsProps) {
   const [isBusy, setIsBusy] = useState(false)
 
   if (!isSocialAuthEnabled()) {
@@ -160,7 +146,7 @@ export function SocialAuthButtons({ disabled = false }: SocialAuthButtonsProps) 
 
       <div className="space-y-3">
         {isGoogleAuthEnabled() ? (
-          <GoogleSignInButton disabled={isDisabled} onBusyChange={setIsBusy} />
+          <GoogleSignInButton disabled={isDisabled} mode={mode} onBusyChange={setIsBusy} />
         ) : null}
         {isAppleAuthEnabled() ? (
           <AppleSignInButton disabled={isDisabled} onBusyChange={setIsBusy} />

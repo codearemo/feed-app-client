@@ -99,7 +99,7 @@ export function RegisterPage() {
         </Button>
       </form>
 
-      <SocialAuthButtons disabled={isSubmitting} />
+      <SocialAuthButtons disabled={isSubmitting} mode="signup" />
 
       <p className="text-center text-sm text-surface-500 dark:text-surface-400">
         Already have an account?{' '}

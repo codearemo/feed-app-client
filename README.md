@@ -51,13 +51,16 @@ In development, Vite proxies `/api`, `/health`, and `/socket.io` to the backend 
 
 | Variable | Description |
 |----------|-------------|
+For production, the app uses `.env.production` (committed) which points at `https://feed-app-server.onrender.com`. Override in Vercel → Environment Variables if needed.
+
+| `VITE_API_ORIGIN` | Backend origin (production default: `https://feed-app-server.onrender.com`). |
 | `VITE_API_BASE_URL` | API path prefix. Use `/api/v1` in dev (proxied). |
 | `VITE_API_PROXY_TARGET` | Backend URL for the Vite dev proxy (default `http://localhost:3000`). |
 | `VITE_DEV_PORT` | Dev server port (default `3010`). |
 | `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID (must match server `GOOGLE_CLIENT_ID`). |
 | `VITE_APPLE_CLIENT_ID` | Apple Sign In client ID (must match server `APPLE_CLIENT_ID`). |
 
-For production, set `VITE_API_BASE_URL` and optionally `VITE_API_ORIGIN` to your deployed API. See `.env.example` for details.
+For production, `.env.production` sets the API to `https://feed-app-server.onrender.com/api/v1`. Set `VITE_GOOGLE_CLIENT_ID` in Vercel. Ensure the server allows your frontend origin for CORS and WebSocket connections.
 
 > **Never commit `.env`** — it is gitignored. Use `.env.example` as the template.
 

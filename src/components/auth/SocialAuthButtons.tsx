@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
-import { GoogleLogin } from '@react-oauth/google'
+import { useState } from 'react'
+import { CustomGoogleSignInButton } from './CustomGoogleSignInButton'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
-import { useGoogleCredentialLogin } from '../../hooks/useGoogleCredentialLogin'
 import { signInWithApple } from '../../lib/auth/apple-sign-in'
 import {
   isAppleAuthEnabled,
@@ -42,50 +41,8 @@ function GoogleSignInButton({
   mode?: 'signin' | 'signup'
   onBusyChange: (busy: boolean) => void
 }) {
-  const handleSuccess = useGoogleCredentialLogin(onBusyChange)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [buttonWidth, setButtonWidth] = useState(320)
-
-  useEffect(() => {
-    const element = containerRef.current
-
-    if (!element) {
-      return
-    }
-
-    function updateWidth() {
-      if (containerRef.current) {
-        setButtonWidth(containerRef.current.offsetWidth)
-      }
-    }
-
-    updateWidth()
-
-    const observer = new ResizeObserver(updateWidth)
-    observer.observe(element)
-
-    return () => observer.disconnect()
-  }, [])
-
-  function handleError() {
-    // Cancelled or failed — no toast; One Tap or retry is available.
-  }
-
   return (
-    <div
-      ref={containerRef}
-      className={`flex w-full justify-center ${disabled ? 'pointer-events-none opacity-50' : ''}`}
-    >
-      <GoogleLogin
-        onSuccess={(response) => void handleSuccess(response)}
-        onError={handleError}
-        theme="outline"
-        size="large"
-        shape="rectangular"
-        text={mode === 'signup' ? 'signup_with' : 'signin_with'}
-        width={buttonWidth}
-      />
-    </div>
+    <CustomGoogleSignInButton disabled={disabled} mode={mode} onBusyChange={onBusyChange} />
   )
 }
 

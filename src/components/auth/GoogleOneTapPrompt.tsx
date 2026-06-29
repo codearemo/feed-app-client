@@ -1,4 +1,4 @@
-import { useGoogleOneTapLogin } from '@react-oauth/google'
+import { useGoogleOneTapPrompt } from '../../hooks/useGoogleOneTapPrompt'
 import { useGoogleCredentialLogin } from '../../hooks/useGoogleCredentialLogin'
 
 type GoogleOneTapPromptProps = {
@@ -9,9 +9,8 @@ type GoogleOneTapPromptProps = {
 export function GoogleOneTapPrompt({ disabled = false }: GoogleOneTapPromptProps) {
   const handleSuccess = useGoogleCredentialLogin()
 
-  useGoogleOneTapLogin({
+  useGoogleOneTapPrompt({
     disabled,
-    cancel_on_tap_outside: true,
     onSuccess: (response) => void handleSuccess(response),
     onError: () => {
       // User dismissed or One Tap unavailable — form button remains as fallback.
